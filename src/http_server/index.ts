@@ -1,6 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { createServer, IncomingMessage, ServerResponse } from 'http';
+import '../ws_server/index';
 
 export const httpServer = createServer(function (req: IncomingMessage, res: ServerResponse) {
     const __dirname = path.resolve(path.dirname(''));
