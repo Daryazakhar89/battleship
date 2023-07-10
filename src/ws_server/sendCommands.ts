@@ -1,6 +1,7 @@
+import WebSocket, { WebSocketServer } from "ws";
+
 import { users, rooms, Room } from "./database";
 import { Action } from "./actions";
-import WebSocket, { WebSocketServer } from "ws";
 import { user } from "./index";
 
 export interface ExtendedWebSocket extends WebSocket {
