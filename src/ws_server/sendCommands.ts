@@ -1,8 +1,7 @@
 import WebSocket, { WebSocketServer } from "ws";
 
-import { users, rooms, Room } from "./database";
+import { users, rooms, Room, User } from "./database";
 import { Action } from "./actions";
-import { user } from "./index";
 
 export interface ExtendedWebSocket extends WebSocket {
   connectionState: {
@@ -61,11 +60,20 @@ export const sendCreateGame = (
   }
 };
 
-export const sendRegisterUser = (socket: ExtendedWebSocket) => {
+export const sendRegisterUser = (user: User, socket: ExtendedWebSocket) => {
+  let error = false;
+  let errorText = '';
+
   socket.connectionState = {
     userId: user.id,
   };
-  users.push(user);
+
+  if (user.name.length >= 6 && user.password.length >= 6) {    //backend validation
+    users.push(user);
+  } else {
+    error = true;
+    errorText = 'Invalid lenght of user credentials';
+  }
 
   socket.send(
     JSON.stringify({
@@ -73,8 +81,8 @@ export const sendRegisterUser = (socket: ExtendedWebSocket) => {
       data: JSON.stringify({
         name: user.name,
         index: user.id,
-        error: false,
-        errorText: "",
+        error,
+        errorText,
       }),
       id: 0,
     })
@@ -93,3 +101,4 @@ export const sendCreateRooms = (socket: ExtendedWebSocket) => {
     roomId: room.roomId,
   };
 };
+

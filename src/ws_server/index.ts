@@ -10,7 +10,7 @@ import {
   sendCreateRooms,
 } from "./sendCommands";
 
-export let user: User;
+let user: User;
 
 const server = new WebSocket.Server({
   port: 3000,
@@ -31,7 +31,7 @@ server.on("connection", (socket: ExtendedWebSocket) => {
         id: users.length,
       };
 
-      sendRegisterUser(socket);
+      sendRegisterUser(user, socket);
       sendUpdatedRooms(socket);
 
     } else if (message.type === Action.CreateRoom) {
