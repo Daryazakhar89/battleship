@@ -62,17 +62,18 @@ export const sendCreateGame = (
 
 export const sendRegisterUser = (user: User, socket: ExtendedWebSocket) => {
   let error = false;
-  let errorText = '';
+  let errorText = "";
 
   socket.connectionState = {
     userId: user.id,
   };
 
-  if (user.name.length >= 6 && user.password.length >= 6) {    //backend validation
+  //backend validation
+  if (user.name.length >= 6 && user.password.length >= 6) {
     users.push(user);
   } else {
     error = true;
-    errorText = 'Invalid lenght of user credentials';
+    errorText = "Invalid lenght of user credentials";
   }
 
   socket.send(

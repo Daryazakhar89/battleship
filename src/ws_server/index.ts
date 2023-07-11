@@ -1,7 +1,7 @@
 import WebSocket from "ws";
 
 import { Action } from "./actions";
-import { users, rooms, User } from "./database";
+import { users, rooms, User, Ships, ship, ships} from "./database";
 import {
   ExtendedWebSocket,
   sendUpdatedRooms,
@@ -11,6 +11,7 @@ import {
 } from "./sendCommands";
 
 let user: User;
+let playerGameData: Ships;
 
 const server = new WebSocket.Server({
   port: 3000,
@@ -33,12 +34,9 @@ server.on("connection", (socket: ExtendedWebSocket) => {
 
       sendRegisterUser(user, socket);
       sendUpdatedRooms(socket);
-
     } else if (message.type === Action.CreateRoom) {
-
       sendCreateRooms(socket);
       sendUpdatedRooms(socket);
-
     } else if (message.type === Action.AddUserToRoom) {
       const indexRoom = message.data.indexRoom;
       const room = rooms.find((room) => room.roomId === indexRoom);
@@ -51,9 +49,25 @@ server.on("connection", (socket: ExtendedWebSocket) => {
         room.roomUsers.push(user);
 
         sendUpdatedRooms(socket);
-
         sendCreateGame(server, socket);
       }
+    } else if (message.type === Action.AddShips) {
+      playerGameData = {
+        gameId: message.data.idGame,
+        indexPlayer: user.id,
+        ships: message.data.ships,
+      }
+      ships.push(playerGameData);
+
+      socket.send(JSON.stringify({
+        type: Action.StartGame,
+        data:
+            {
+                ships: playerGameData.ships,
+                currentPlayerIndex: playerGameData.indexPlayer,
+            },
+        id: 0,
+    }))
     }
   });
 
@@ -61,3 +75,4 @@ server.on("connection", (socket: ExtendedWebSocket) => {
     console.log("WebSocket connection closed!");
   });
 });
+
